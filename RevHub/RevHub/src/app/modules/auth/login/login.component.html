@@ -1,0 +1,22 @@
+<div class="d-flex justify-content-center align-items-center min-vh-100">
+  <div class="col-md-4">
+    <h1 class="text-center mb-4 revhub-title">{{displayText}}</h1>
+    <div class="card" *ngIf="showForm">
+      <div class="card-body">
+        <h3 class="card-title text-center mb-4">Login</h3>
+        <form>
+          <div class="mb-3">
+            <input type="email" class="form-control" placeholder="Email" value="admin@revhub.com">
+          </div>
+          <div class="mb-3">
+            <input type="password" class="form-control" placeholder="Password" value="admin123">
+          </div>
+          <a class="btn btn-primary w-100" routerLink="/dashboard">Login</a>
+        </form>
+        <div class="text-center mt-3">
+          <a routerLink="/auth/register">Don't have an account? Register</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

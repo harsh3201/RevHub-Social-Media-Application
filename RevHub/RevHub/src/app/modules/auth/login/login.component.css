@@ -1,0 +1,15 @@
+@import url('https://fonts.googleapis.com/css2?family=Momo+Signature&display=swap');
+
+.typing-cursor {
+  animation: blink 1s infinite;
+}
+
+@keyframes blink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0; }
+}
+
+.revhub-title {
+  font-family: 'Momo Signature', cursive;
+  font-size: 3rem;
+}
