@@ -21,6 +21,9 @@ public class LikeService {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private NotificationMongoService notificationService;
+
     @Transactional
     public java.util.Map<String, Object> toggleLike(Long postId, String username) {
         User user = userRepository.findByUsername(username)
@@ -42,6 +45,10 @@ public class LikeService {
             likeRepository.save(like);
             post.setLikesCount(post.getLikesCount() + 1);
             isLiked = true;
+            
+            if (!post.getAuthor().getId().equals(user.getId())) {
+                notificationService.createLikeNotification(post.getAuthor(), user, postId);
+            }
         }
         postRepository.save(post);
         

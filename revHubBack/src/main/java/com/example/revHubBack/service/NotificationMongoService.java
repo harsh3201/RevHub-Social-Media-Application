@@ -154,4 +154,23 @@ public class NotificationMongoService {
         
         notificationRepository.save(notification);
     }
+    
+    public void createCommentNotification(User postOwner, User commenter, Long postId, String content) {
+        if (postOwner.getId().equals(commenter.getId())) {
+            return;
+        }
+        
+        NotificationMongo notification = new NotificationMongo();
+        notification.setUserId(postOwner.getId().toString());
+        notification.setFromUserId(commenter.getId().toString());
+        notification.setFromUsername(commenter.getUsername());
+        notification.setFromUserProfilePicture(commenter.getProfilePicture());
+        notification.setType("COMMENT");
+        notification.setMessage(commenter.getUsername() + " commented on your post");
+        notification.setPostId(postId);
+        notification.setCommentId(null);
+        notification.setCreatedDate(LocalDateTime.now());
+        
+        notificationRepository.save(notification);
+    }
 }

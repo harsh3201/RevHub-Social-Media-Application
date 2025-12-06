@@ -23,6 +23,9 @@ public class CommentService {
 
     @Autowired
     private UserRepository userRepository;
+    
+    @Autowired
+    private NotificationMongoService notificationService;
 
     public List<Comment> getCommentsByPost(Long postId) {
         Post post = postRepository.findById(postId)
@@ -64,6 +67,11 @@ public class CommentService {
         
         post.setCommentsCount(post.getCommentsCount() + 1);
         postRepository.save(post);
+        
+        // Create notification for comment
+        if (!post.getAuthor().getId().equals(user.getId())) {
+            notificationService.createCommentNotification(post.getAuthor(), user, postId, commentRequest.getContent());
+        }
 
         return savedComment;
     }

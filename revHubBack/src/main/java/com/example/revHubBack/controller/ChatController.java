@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.HashMap;
 
 @RestController
 @RequestMapping("/chat")
@@ -20,12 +21,23 @@ public class ChatController {
     @PostMapping("/send")
     public ResponseEntity<ChatMessage> sendMessage(@RequestBody Map<String, String> request, Authentication authentication) {
         try {
+            System.out.println("Chat send request received: " + request);
+            
             String receiverUsername = request.get("receiverUsername");
             String content = request.get("content");
+            String senderUsername = authentication.getName();
             
-            ChatMessage message = chatService.sendMessage(authentication.getName(), receiverUsername, content);
+            if (receiverUsername == null || content == null) {
+                System.out.println("Missing receiverUsername or content");
+                return ResponseEntity.badRequest().build();
+            }
+            
+            ChatMessage message = chatService.sendMessage(senderUsername, receiverUsername, content);
+            System.out.println("Message saved: " + message.getId());
             return ResponseEntity.ok(message);
-        } catch (RuntimeException e) {
+        } catch (Exception e) {
+            System.out.println("Error in sendMessage: " + e.getMessage());
+            e.printStackTrace();
             return ResponseEntity.badRequest().build();
         }
     }

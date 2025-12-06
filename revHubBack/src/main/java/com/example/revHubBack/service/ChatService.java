@@ -24,37 +24,42 @@ public class ChatService {
     private NotificationMongoService notificationService;
     
     public ChatMessage sendMessage(String senderUsername, String receiverUsername, String content) {
-        User sender = userRepository.findByUsername(senderUsername)
-                .orElseThrow(() -> new RuntimeException("Sender not found"));
-        
-        User receiver = userRepository.findByUsername(receiverUsername)
-                .orElseThrow(() -> new RuntimeException("Receiver not found"));
+        System.out.println("💬 Saving message from " + senderUsername + " to " + receiverUsername);
         
         ChatMessage message = new ChatMessage();
-        message.setSenderId(sender.getId().toString());
-        message.setSenderUsername(sender.getUsername());
-        message.setReceiverId(receiver.getId().toString());
-        message.setReceiverUsername(receiver.getUsername());
+        message.setSenderId(senderUsername);
+        message.setSenderUsername(senderUsername);
+        message.setReceiverId(receiverUsername);
+        message.setReceiverUsername(receiverUsername);
         message.setContent(content);
         message.setTimestamp(LocalDateTime.now());
         
         ChatMessage savedMessage = chatMessageRepository.save(message);
+        System.out.println("✅ Message saved to MongoDB with ID: " + savedMessage.getId());
         
-        createMessageNotification(receiver, sender, content);
+        // Create notification for new message
+        try {
+            User sender = userRepository.findByUsername(senderUsername).orElse(null);
+            User receiver = userRepository.findByUsername(receiverUsername).orElse(null);
+            if (sender != null && receiver != null) {
+                notificationService.createMessageNotification(receiver, sender, content);
+            }
+        } catch (Exception e) {
+            System.out.println("⚠️ Failed to create message notification: " + e.getMessage());
+        }
         
         return savedMessage;
     }
     
     public List<ChatMessage> getConversation(String username1, String username2) {
         try {
-            User user1 = userRepository.findByUsername(username1)
-                    .orElseThrow(() -> new RuntimeException("User1 not found"));
-            
-            User user2 = userRepository.findByUsername(username2)
-                    .orElseThrow(() -> new RuntimeException("User2 not found"));
-            
-            return chatMessageRepository.findConversation(user1.getId().toString(), user2.getId().toString());
+            System.out.println("📝 Getting conversation between " + username1 + " and " + username2);
+            // Use usernames directly for MongoDB queries
+            List<ChatMessage> messages = chatMessageRepository.findConversation(username1, username2);
+            System.out.println("✅ Found " + messages.size() + " messages");
+            return messages;
         } catch (Exception e) {
+            System.out.println("❌ Error getting conversation: " + e.getMessage());
             return new java.util.ArrayList<>();
         }
     }
@@ -79,11 +84,9 @@ public class ChatService {
     
     public List<String> getChatContacts(String username) {
         try {
-            User user = userRepository.findByUsername(username)
-                    .orElseThrow(() -> new RuntimeException("User not found"));
-            
-            // Get all messages involving this user
-            List<ChatMessage> messages = chatMessageRepository.findAllUserChats(user.getId().toString());
+            System.out.println("📞 Getting chat contacts for " + username);
+            // Use username directly for MongoDB queries
+            List<ChatMessage> messages = chatMessageRepository.findAllUserChats(username);
             
             // Extract unique contact usernames
             java.util.Set<String> contactSet = new java.util.HashSet<>();
@@ -96,9 +99,10 @@ public class ChatService {
                 }
             }
             
+            System.out.println("✅ Found " + contactSet.size() + " contacts");
             return new java.util.ArrayList<>(contactSet);
         } catch (Exception e) {
-            System.out.println("Error getting chat contacts: " + e.getMessage());
+            System.out.println("❌ Error getting chat contacts: " + e.getMessage());
             return new java.util.ArrayList<>();
         }
     }
