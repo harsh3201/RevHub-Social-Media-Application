@@ -1,4 +1,4 @@
-# 🚀 RevHub — Social Media Application
+# 🚀 RevHub — Social Media Application(Monolithic)
 
 A modern full-stack social media platform built with **Angular**, **Spring Boot**, **MySQL**, and **MongoDB**.  
 RevHub supports user authentication, posting, likes/comments, real-time chat, and notifications — built with a clean, modular, and scalable architecture.
