@@ -3,17 +3,17 @@
 # Stage 1: Build Angular Frontend
 FROM node:18-alpine AS frontend-build
 WORKDIR /app/frontend
-COPY RevHub/RevHub/package*.json ./
+COPY RevHub/package*.json ./
 RUN npm ci
-COPY RevHub/RevHub/ ./
+COPY RevHub/ ./
 RUN npm run build
 
 # Stage 2: Build Spring Boot Backend
 FROM maven:3.8.4-openjdk-17-slim AS backend-build
 WORKDIR /app/backend
-COPY RevHub/revHubBack/pom.xml ./
+COPY revHubBack/pom.xml ./
 RUN mvn dependency:go-offline -B
-COPY RevHub/revHubBack/src ./src
+COPY revHubBack/src ./src
 RUN mvn clean package -DskipTests -B
 
 # Stage 3: Production Image with Nginx + Java
