@@ -107,3 +107,21 @@ sudo chmod 600 /swapfile
 sudo mkswap /swapfile
 sudo swapon /swapfile
 ```
+
+## Restarting the Instance
+
+If you stop and start your EC2 instance, the Public IP address will likely change (unless you have an Elastic IP).
+
+1.  **Get the new Public IP** from AWS Console.
+2.  **SSH** into the instance:
+    ```bash
+    ssh -i "path-to-key.pem" ubuntu@<new-public-ip>
+    ```
+3.  **Navigate** to the folder:
+    ```bash
+    cd RevHub-Social-Media-Application
+    ```
+4.  **Start the App** (Docker usually restarts automatically, but to be sure):
+    ```bash
+    sudo docker-compose up -d
+    ```
