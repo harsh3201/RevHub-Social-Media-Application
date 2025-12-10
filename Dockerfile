@@ -13,6 +13,7 @@ FROM maven:3.8.6-eclipse-temurin-17 AS backend-build
 WORKDIR /app/backend
 # Copy pom.xml and dependency download
 COPY revHubBack/pom.xml ./
+RUN mkdir -p /root/.m2 && chmod -R 777 /root/.m2
 RUN mvn dependency:go-offline -B
 # Copy source code and build
 COPY revHubBack/src ./src
