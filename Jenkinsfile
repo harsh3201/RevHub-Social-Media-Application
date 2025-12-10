@@ -2,7 +2,8 @@ pipeline {
     agent any
 
     tools {
-        nodejs 'node-lts'   // MUST match the name you set in Global Tool Configuration
+        nodejs 'node-lts'
+        maven  'MAVEN3'
     }
 
     stages {
