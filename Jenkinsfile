@@ -1,9 +1,8 @@
 pipeline {
     agent any
 
-    tools {
-        nodejs 'node-lts'
-        maven  'MAVEN3'
+    environment {
+        COMPOSE_PROJECT_NAME = "revhub_cicd"
     }
 
     stages {
@@ -13,57 +12,29 @@ pipeline {
             }
         }
 
-        stage('Build Frontend') {
-            steps {
-                dir('RevHub') {
-                    script {
-                        if (isUnix()) {
-                            sh 'npm ci'
-                            sh 'npm run build -- --configuration=production'
-                        } else {
-                            bat 'npm ci'
-                            bat 'npm run build -- --configuration=production'
-                        }
-                    }
-                }
-            }
-        }
-
-        stage('Build Backend') {
-            steps {
-                dir('revHubBack') {
-                    script {
-                        if (isUnix()) {
-                            sh 'mvn -B -DskipTests clean package'
-                        } else {
-                            bat 'mvn -B -DskipTests clean package'
-                        }
-                    }
-                }
-            }
-        }
-
-        stage('Docker Build') {
+        stage('Build & Deploy') {
             steps {
                 script {
                     if (isUnix()) {
-                        sh 'docker-compose build'
+                        sh 'docker-compose down --rmi local --remove-orphans'
+                        sh 'docker-compose up -d --build'
                     } else {
-                        bat 'docker-compose build'
+                        // Windows Environment
+                        bat 'docker-compose down --rmi local --remove-orphans'
+                        bat 'docker-compose up -d --build'
                     }
                 }
             }
         }
-
-        stage('Docker Deploy') {
+        
+        stage('Health Check') {
             steps {
                 script {
+                    sleep 30 // Wait for containers to initialize
                     if (isUnix()) {
-                        sh 'docker-compose down'
-                        sh 'docker-compose up -d'
+                        sh 'docker ps'
                     } else {
-                        bat 'docker-compose down'
-                        bat 'docker-compose up -d'
+                        bat 'docker ps'
                     }
                 }
             }
@@ -73,6 +44,21 @@ pipeline {
     post {
         always {
             cleanWs()
+            // Optional: Prune builder cache to save space, but might slow down future builds
+            // script {
+            //    sh 'docker builder prune -f'
+            // }
+        }
+        failure {
+             echo 'Deployment Failed. Check logs.'
+             // Capture logs for debugging
+             script {
+                 if (isUnix()) {
+                     sh 'docker-compose logs'
+                 } else {
+                     bat 'docker-compose logs'
+                 }
+             }
         }
     }
 }
