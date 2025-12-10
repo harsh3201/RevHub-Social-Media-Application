@@ -34,40 +34,23 @@ services:
       timeout: 5s
       retries: 10
 
-  backend:
+  app:
     build:
-      context: ./revHubBack
+      context: .
       dockerfile: Dockerfile
-    container_name: revhub-backend
+    container_name: revhub
     ports:
+      - "4200:80"
       - "8080:8080"
     depends_on:
       mysql:
         condition: service_healthy
       mongodb:
         condition: service_healthy
-    networks:
-      - revhub-network
     environment:
       SPRING_PROFILES_ACTIVE: docker
-      SPRING_DATASOURCE_URL: jdbc:mysql://revhub-mysql:3306/revhubteam4
-      SPRING_DATASOURCE_USERNAME: root
-      SPRING_DATASOURCE_PASSWORD: root
-      MONGO_URI: mongodb://revhub-mongo:27017/revhub
-
-  frontend:
-    build:
-      context: ./RevHub
-      dockerfile: Dockerfile
-    container_name: revhub-frontend
-    ports:
-      - "4200:80"
-    depends_on:
-      - backend
     networks:
       - revhub-network
-    environment:
-      API_BASE_URL: http://revhub-backend:8080
 
 volumes:
   mysql_data:
