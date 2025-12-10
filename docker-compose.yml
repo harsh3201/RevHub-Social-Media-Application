@@ -14,7 +14,7 @@ services:
     networks:
       - revhub-network
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-uroot", "-proot"]
       interval: 10s
       timeout: 5s
       retries: 10
@@ -34,12 +34,13 @@ services:
       timeout: 5s
       retries: 10
 
-  app:
-    build: .
-    container_name: revhub-app
+  backend:
+    build:
+      context: ./revHubBack
+      dockerfile: Dockerfile
+    container_name: revhub-backend
     ports:
-      - "9090:80"
-      - "9091:8080"
+      - "8080:8080"
     depends_on:
       mysql:
         condition: service_healthy
@@ -48,7 +49,25 @@ services:
     networks:
       - revhub-network
     environment:
-      - SPRING_PROFILES_ACTIVE=docker
+      SPRING_PROFILES_ACTIVE: docker
+      SPRING_DATASOURCE_URL: jdbc:mysql://revhub-mysql:3306/revhubteam4
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: root
+      MONGO_URI: mongodb://revhub-mongo:27017/revhub
+
+  frontend:
+    build:
+      context: ./RevHub
+      dockerfile: Dockerfile
+    container_name: revhub-frontend
+    ports:
+      - "4200:80"
+    depends_on:
+      - backend
+    networks:
+      - revhub-network
+    environment:
+      API_BASE_URL: http://revhub-backend:8080
 
 volumes:
   mysql_data:
