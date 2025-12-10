@@ -1,0 +1,59 @@
+#############################################
+# BACKEND (Spring Boot / Maven)
+#############################################
+
+HELP.md
+target/
+.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+
+# STS
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+# IntelliJ
+.idea/
+*.iws
+*.iml
+*.ipr
+
+# NetBeans
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+build/
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+# VSCode
+.vscode/
+
+#############################################
+# FRONTEND (Angular)
+#############################################
+
+# Core Angular build artifacts
+RevHub/node_modules/
+RevHub/dist/
+RevHub/.angular/
+RevHub/build/
+
+# Angular environment configs (optional)
+RevHub/src/environments/*.prod.ts
+
+#############################################
+# General
+#############################################
+
+*.log
+*.tmp
+.DS_Store
+Thumbs.db
