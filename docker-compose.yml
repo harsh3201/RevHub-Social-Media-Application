@@ -35,9 +35,10 @@ services:
       retries: 10
 
   app:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: harsh4801/revhub-app:latest
+    # build:
+    #   context: .
+    #   dockerfile: Dockerfile
     restart: unless-stopped
     ports:
       - "8088:80" # Frontend (Moved to 8088 to avoid Port 80 conflicts)
