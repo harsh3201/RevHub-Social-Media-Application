@@ -6,6 +6,8 @@ RUN npm ci --legacy-peer-deps --quiet
 COPY RevHub/ ./
 RUN npm run build -- --configuration=production
 
+
+
 # Stage 2: Build Spring Boot Backend
 FROM maven:3.8.6-eclipse-temurin-17 AS backend-build
 WORKDIR /app/backend
@@ -27,6 +29,9 @@ WORKDIR /app
 
 RUN rm -f /etc/nginx/nginx.conf
 COPY nginx.conf /etc/nginx/nginx.conf
+
+# Clean default nginx content
+RUN rm -rf /usr/share/nginx/html/*
 
 COPY --from=frontend-build /app/frontend/dist/rev-hub/browser/. /usr/share/nginx/html/
 COPY --from=backend-build /app/backend/target/*.jar /app/app.jar
