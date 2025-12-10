@@ -1,7 +1,7 @@
 // Test script to verify chat and notification endpoints
 // Run this after starting the backend server
 
-const baseUrl = 'http://localhost:8080';
+const baseUrl = 'http://localhost:9091';
 
 // Test data - you'll need to replace with actual JWT token
 const testToken = 'your-jwt-token-here';
