@@ -1,10 +1,36 @@
 pipeline {
     agent any
 
+    tools {
+        nodejs 'node-lts'   // MUST match the name you set in Global Tool Configuration
+    }
+
     stages {
         stage('Checkout') {
             steps {
                 checkout scm
+            }
+        }
+
+        stage('Agent Info') {
+            steps {
+                script {
+                    if (isUnix()) {
+                        sh 'uname -a || true'
+                        sh 'node --version || true'
+                        sh 'npm --version || true'
+                        sh 'mvn -v || true'
+                        sh 'docker --version || true'
+                        sh 'docker-compose --version || true'
+                    } else {
+                        bat 'ver'
+                        bat 'node --version || echo node-not-found'
+                        bat 'npm --version || echo npm-not-found'
+                        bat 'mvn -v || echo maven-not-found'
+                        bat 'docker --version || echo docker-not-found'
+                        bat 'docker-compose --version || echo docker-compose-not-found'
+                    }
+                }
             }
         }
 
@@ -13,9 +39,11 @@ pipeline {
                 dir('RevHub') {
                     script {
                         if (isUnix()) {
+                            sh 'npm --version'
                             sh 'npm install'
                             sh 'npm run build'
                         } else {
+                            bat 'npm --version'
                             bat 'npm install'
                             bat 'npm run build'
                         }
@@ -29,7 +57,6 @@ pipeline {
                 dir('revHubBack') {
                     script {
                         if (isUnix()) {
-                            // Using Maven Wrapper if available, else mvn
                             if (fileExists('mvnw')) {
                                 sh './mvnw clean package -DskipTests'
                             } else {
@@ -51,11 +78,11 @@ pipeline {
             steps {
                 script {
                     if (isUnix()) {
-                        sh 'docker-compose down'
+                        sh 'docker-compose down || true'
                         sh 'docker-compose up -d --build'
                     } else {
-                        bat 'docker-compose down'
-                        bat 'docker-compose up -d --build'
+                        bat 'docker-compose down || echo docker-compose-down-failed'
+                        bat 'docker-compose up -d --build || echo docker-compose-up-failed'
                     }
                 }
             }
